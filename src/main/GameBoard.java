@@ -9,36 +9,45 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 public class GameBoard extends JPanel {
+
     public static final int fieldWH = 50;
-    public static final int boardOffsetX = 10;
-    public static final int boardOffsetY = 70;
+    public static final int boardOffsetX = 40;
+    public static final int boardOffsetY = 100;
     public static final int bombMaxAmount = 10;
     public static final int fieldMaxIndex = 8;
 
+    private final GameEnvironment gameEnvironment = new GameEnvironment();
+    private Timer gameLostTimer;
 
-    private final Field[][] bombs = new Field[9][9];
+    //Richtungen der angrenzenden Spielfelder
     private final int[][] directions = new int[][]{{-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}};
+    private final Field[][] bombs = new Field[9][9];
     private final Random rand = new Random();
 
+    //Map number to image
     private final Map<Integer, BufferedImage> numberImages = new HashMap<>();
 
     public GameBoard() {
-
+        new GameEnvironment();
+        setBackground(new Color(86, 64, 26));
         for (int row = 0; row <= fieldMaxIndex; row++) {
             for (int col = 0; col <= fieldMaxIndex; col++) {
                 bombs[row][col] = new Field(0, 0);
             }
         }
         try{
+            //Flag
             numberImages.put(-3, ImageIO.read(new File("image/set1/-3.png")));
+            //Button
             numberImages.put(-2, ImageIO.read(new File("image/set1/-2.png")));
+            //Bomb
             numberImages.put(-1, ImageIO.read(new File("image/set1/-1.png")));
+            //Numbers
             numberImages.put( 0, ImageIO.read(new File("image/set1/0.png")));
             numberImages.put( 1, ImageIO.read(new File("image/set1/1.png")));
             numberImages.put( 2, ImageIO.read(new File("image/set1/2.png")));
@@ -59,13 +68,38 @@ public class GameBoard extends JPanel {
                 int col = (e.getX() - boardOffsetX) / fieldWH;
 
                 if(SwingUtilities.isLeftMouseButton(e)) {
-                    bombs[row][col].setStatus(1);
+                    if(bombs[row][col].getType() == 0) {
+                        //open 0-Field
+                        revealType0(row, col);
+                    } else if(bombs[row][col].getType() == -1) {
+                        //GameOver
+                        GameEnvironment.gameLost = true;
+                        gameLostTimer = new Timer(10, e1 -> {
+                            if (GameEnvironment.loseMessageX < 0) {
+                                GameEnvironment.loseMessageX += 1;
+                                repaint();
+                            } else {
+                                gameLostTimer.stop();
+                            }
+                        });
+                        gameLostTimer.start();
+                        for (int rowLOST = 0; rowLOST <= fieldMaxIndex; rowLOST++) {
+                            for (int colLOST = 0; colLOST <= fieldMaxIndex; colLOST++) {
+                                bombs[rowLOST][colLOST].setStatus(1);
+                            }
+                        }
+                    } else {
+                        //open non-0/non-bomb-Fields
+                        bombs[row][col].setStatus(1);
+                    }
                     repaint();
                 }
                 if(SwingUtilities.isRightMouseButton(e)) {
                     if(bombs[row][col].getStatus() == 0) {
+                        //flag
                         bombs[row][col].setStatus(2);
                     } else if(bombs[row][col].getStatus() == 2){
+                        //un flag
                         bombs[row][col].setStatus(0);
                     }
                     repaint();
@@ -84,8 +118,8 @@ public class GameBoard extends JPanel {
                 bombCounter++;
             }
         }
-        for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 9; col++) {
+        for (int row = 0; row <= fieldMaxIndex; row++) {
+            for (int col = 0; col <= fieldMaxIndex; col++) {
                 if (bombs[row][col].getType() == -1) {
                     continue;
                 }
@@ -107,18 +141,42 @@ public class GameBoard extends JPanel {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        for (int col = 0; col <= fieldMaxIndex; col++) {
-            for (int row = 0; row <= fieldMaxIndex; row++) {
+        for (int row = 0; row <= fieldMaxIndex; row++) {
+            for (int col = 0; col <= fieldMaxIndex; col++) {
 
                 if (bombs[row][col].getStatus() == 1) {
-                    g.drawImage(numberImages.get(bombs[row][col].getType()),
-                            boardOffsetX + col * fieldWH, boardOffsetY + row * fieldWH, fieldWH, fieldWH, null);
+                    paintFieldTexture(row, col, bombs[row][col].getType(), g);
+
                 } else if(bombs[row][col].getStatus() == 0) {
-                    g.drawImage(numberImages.get(-2),
-                            boardOffsetX + col * fieldWH, boardOffsetY + row * fieldWH, fieldWH, fieldWH, null);
+                    paintFieldTexture(row, col, -2, g);
+
                 } else {
-                    g.drawImage(numberImages.get(-3),
-                            boardOffsetX + col * fieldWH, boardOffsetY + row * fieldWH, fieldWH, fieldWH, null);
+                    paintFieldTexture(row, col, -3, g);
+
+                }
+            }
+        }
+        gameEnvironment.paint(g);
+    }
+
+    private void paintFieldTexture(int row, int col, int type, Graphics g) {
+        g.drawImage(numberImages.get(type), boardOffsetX + col * fieldWH, boardOffsetY + row * fieldWH, fieldWH, fieldWH, null);
+    }
+
+    private void revealType0(int row, int col) {
+        if (bombs[row][col].getStatus() == 1) return;
+
+        bombs[row][col].setStatus(1);
+
+        for(int dir = 0; dir < 8; dir++) {
+            int x = row + directions[dir][1];
+            int y = col + directions[dir][0];
+
+            if (x >= 0 && y >= 0 && x <= fieldMaxIndex && y <= fieldMaxIndex) {
+                if(bombs[x][y].getType() == 0 && bombs[x][y].getStatus() == 0) {
+                    revealType0(x, y);
+                } else if(bombs[x][y].getType() > 0) {
+                    bombs[x][y].setStatus(1);
                 }
             }
         }
