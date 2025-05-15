@@ -1,6 +1,13 @@
 package main;
 
 public class Field {
+    public static final int TYPE_BOMB = -1;
+    public static final int TYPE_FLAG = -3;
+    public static final int STATUS_HIDDEN = 0;
+    public static final int STATUS_REVEALED = 1;
+    public static final int STATUS_FLAGGED = 2;
+
+
     private int type = 0;
     private int status = 0; // 0: unclicked, 1: clicked, 2: flagged
     private int x;

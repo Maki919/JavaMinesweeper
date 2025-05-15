@@ -13,15 +13,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import static main.Field.*;
+
 public class GameBoard extends JPanel {
 
     public static final int fieldWH = 50;
     public static final int boardOffsetX = 40;
     public static final int boardOffsetY = 100;
-    public static final int bombMaxAmount = 10;
-    public static final int fieldMaxIndex = 8;
+    private final int bombMaxAmount = 10;
+    private final int fieldMaxIndex = 8;
+    private int flagsPlaced = 0;
+    private int bombsFlagged = 0;
 
-    private final GameEnvironment gameEnvironment = new GameEnvironment();
+    private final GameEnvironment gameEnvironment = new GameEnvironment(this);
     private Timer gameLostTimer;
 
     //Richtungen der angrenzenden Spielfelder
@@ -29,15 +33,16 @@ public class GameBoard extends JPanel {
     private final Field[][] bombs = new Field[9][9];
     private final Random rand = new Random();
 
+
     //Map number to image
     private final Map<Integer, BufferedImage> numberImages = new HashMap<>();
 
     public GameBoard() {
-        new GameEnvironment();
+        new GameEnvironment(this);
         setBackground(new Color(86, 64, 26));
         for (int row = 0; row <= fieldMaxIndex; row++) {
             for (int col = 0; col <= fieldMaxIndex; col++) {
-                bombs[row][col] = new Field(0, 0);
+                bombs[row][col] = new Field(0, STATUS_HIDDEN);
             }
         }
         try{
@@ -68,39 +73,45 @@ public class GameBoard extends JPanel {
                 int col = (e.getX() - boardOffsetX) / fieldWH;
 
                 if(SwingUtilities.isLeftMouseButton(e)) {
+                    if(bombs[row][col].getStatus() == STATUS_FLAGGED)
+                        flagsPlaced--;
+
                     if(bombs[row][col].getType() == 0) {
                         //open 0-Field
                         revealType0(row, col);
-                    } else if(bombs[row][col].getType() == -1) {
+                    } else if(bombs[row][col].getType() == TYPE_BOMB) {
                         //GameOver
-                        GameEnvironment.gameLost = true;
-                        gameLostTimer = new Timer(10, e1 -> {
-                            if (GameEnvironment.loseMessageX < 0) {
-                                GameEnvironment.loseMessageX += 1;
-                                repaint();
-                            } else {
-                                gameLostTimer.stop();
-                            }
-                        });
-                        gameLostTimer.start();
-                        for (int rowLOST = 0; rowLOST <= fieldMaxIndex; rowLOST++) {
-                            for (int colLOST = 0; colLOST <= fieldMaxIndex; colLOST++) {
-                                bombs[rowLOST][colLOST].setStatus(1);
-                            }
-                        }
+                        GameEnvironment.gameLost = 1;
+                        resultMessageAnimation();
+                        revealWholeBoard();
                     } else {
                         //open non-0/non-bomb-Fields
-                        bombs[row][col].setStatus(1);
+                        bombs[row][col].setStatus(STATUS_REVEALED);
                     }
                     repaint();
                 }
                 if(SwingUtilities.isRightMouseButton(e)) {
-                    if(bombs[row][col].getStatus() == 0) {
+                    if(bombs[row][col].getStatus() == STATUS_HIDDEN) {
                         //flag
-                        bombs[row][col].setStatus(2);
-                    } else if(bombs[row][col].getStatus() == 2){
+                        if (flagsPlaced < bombMaxAmount) {
+                            bombs[row][col].setStatus(STATUS_FLAGGED);
+                            flagsPlaced++;
+                            if (bombs[row][col].getType() == TYPE_BOMB) {
+                                bombsFlagged++;
+
+                                if (bombsFlagged == bombMaxAmount){
+                                    GameEnvironment.gameLost = -1;
+                                    resultMessageAnimation();
+                                    revealWholeBoard();
+                                }
+                            }
+                        }
+                    } else if(bombs[row][col].getStatus() == STATUS_FLAGGED){
                         //un flag
-                        bombs[row][col].setStatus(0);
+                        bombs[row][col].setStatus(STATUS_HIDDEN);
+                        flagsPlaced--;
+                        if (bombs[row][col].getType() == TYPE_BOMB)
+                            bombsFlagged--;
                     }
                     repaint();
                 }
@@ -114,13 +125,13 @@ public class GameBoard extends JPanel {
             int randRow = rand.nextInt(9);
             int randCol = rand.nextInt(9);
             if (bombs[randRow][randCol].getType() == 0) {
-                bombs[randRow][randCol].setType(-1);
+                bombs[randRow][randCol].setType(TYPE_BOMB);
                 bombCounter++;
             }
         }
         for (int row = 0; row <= fieldMaxIndex; row++) {
             for (int col = 0; col <= fieldMaxIndex; col++) {
-                if (bombs[row][col].getType() == -1) {
+                if (bombs[row][col].getType() == TYPE_BOMB) {
                     continue;
                 }
                 int bombsInArea = 0;
@@ -128,7 +139,7 @@ public class GameBoard extends JPanel {
                     int x = row + direction[0];
                     int y = col + direction[1];
                     if (x >= 0 && y >= 0 && x <= fieldMaxIndex && y <= fieldMaxIndex) {
-                        if (bombs[x][y].getType() == -1) {
+                        if (bombs[x][y].getType() == TYPE_BOMB) {
                             bombsInArea++;
                         }
                     }
@@ -156,11 +167,19 @@ public class GameBoard extends JPanel {
                 }
             }
         }
-        gameEnvironment.paint(g);
+        gameEnvironment.paint(g, this);
     }
 
     private void paintFieldTexture(int row, int col, int type, Graphics g) {
         g.drawImage(numberImages.get(type), boardOffsetX + col * fieldWH, boardOffsetY + row * fieldWH, fieldWH, fieldWH, null);
+    }
+    private void revealWholeBoard(){
+        for (int row = 0; row <= fieldMaxIndex; row++) {
+            for (int col = 0; col <= fieldMaxIndex; col++) {
+                bombs[row][col].setStatus(1);
+                repaint();
+            }
+        }
     }
 
     private void revealType0(int row, int col) {
@@ -181,5 +200,20 @@ public class GameBoard extends JPanel {
             }
         }
     }
+    private void resultMessageAnimation(){
+        gameLostTimer = new Timer(10, e1 -> {
+            if (GameEnvironment.loseMessageX < 0) {
+                GameEnvironment.loseMessageX += 1;
+                repaint();
+            } else {
+                gameLostTimer.stop();
+            }
+        });
+        gameLostTimer.start();
+    }
+
+    public int getFlagsPlaced() { return this.flagsPlaced; }
+    public int getBombMaxAmount(){ return this.bombMaxAmount; }
+    public int getFieldMaxIndex(){ return this.fieldMaxIndex; }
 }
 
