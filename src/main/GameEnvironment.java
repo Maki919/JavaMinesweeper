@@ -1,6 +1,8 @@
 package main;
 
 
+import nonGame.Stats;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -96,10 +98,13 @@ public class GameEnvironment {
     public void setGameStateLost(GameBoard gameBoard) {
         currentGameState = gameState.LOST;
         resultMessageAnimation(gameBoard);
+        Stats.handleGameOver(secondsPlayed, gameBoard.getBombsFlagged());
+        Stats.incrementGamesLost();
     }
     public void setGameStateWon(GameBoard gameBoard) {
         currentGameState = gameState.WON;
         resultMessageAnimation(gameBoard);
+        Stats.handleGameOver(secondsPlayed, gameBoard.getBombsFlagged());
     }
 
 }

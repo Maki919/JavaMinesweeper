@@ -1,5 +1,7 @@
 package main;
 
+import nonGame.Stats;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -208,6 +210,7 @@ public class GameBoard extends JPanel {
     }
 
     public int getFlagsPlaced() { return this.flagsPlaced; }
+    public int getBombsFlagged() { return this.bombsFlagged; }
     public int getBombMaxAmount(){ return this.bombMaxAmount; }
 }
 
