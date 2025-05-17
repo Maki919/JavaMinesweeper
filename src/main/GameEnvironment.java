@@ -62,26 +62,31 @@ public class GameEnvironment {
     }
 
     public void paint(Graphics g, GameBoard gameBoard) {
-        switch (HomeScreen.getChosenDifficulty()) {
-            case Difficulty.EASY:
-                g.drawImage(gameEnvironmentEasy, 0,0, MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT, null);
-                break;
-            case Difficulty.MEDIUM:
-                g.drawImage(gameEnvironmentMedium, 0,0, MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT, null);
-                break;
-        }
-
-
-        g.setColor(new Color(147, 123, 46));
-        g.setFont(new Font("Adelle Sans Devanagari", Font.BOLD, 20));
-
         int remainingFlagsScore = gameBoard.getBombMaxAmount() - gameBoard.getFlagsPlaced();
         int remainingFlagsScoreXOffset = 104;
         if (remainingFlagsScore < 10) {
             remainingFlagsScoreXOffset -= 5;
         }
-        g.drawString(""+ remainingFlagsScore, MainApp.FRAME_WIDTH/2 - remainingFlagsScoreXOffset, 41 );
-        g.drawString(""+ secondsPlayed, MainApp.FRAME_WIDTH/2 + secondsPlayedXOffset, 41 );
+        g.setColor(new Color(147, 123, 46));
+        g.setFont(new Font("Adelle Sans Devanagari", Font.BOLD, 20));
+
+        switch (HomeScreen.getChosenDifficulty()) {
+            case Difficulty.EASY:
+                g.drawImage(gameEnvironmentEasy, 0,0, MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT, null);
+                g.drawString(""+ remainingFlagsScore, MainApp.FRAME_WIDTH/2 - remainingFlagsScoreXOffset, 41 );
+                g.drawString(""+ secondsPlayed, MainApp.FRAME_WIDTH/2 + secondsPlayedXOffset, 41 );
+                break;
+            case Difficulty.MEDIUM:
+                g.drawImage(gameEnvironmentMedium, 0,0, MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT, null);
+                g.drawString(""+ remainingFlagsScore, MainApp.FRAME_WIDTH/2 - remainingFlagsScoreXOffset - 43, 62 );
+                g.drawString(""+ secondsPlayed, MainApp.FRAME_WIDTH/2 + secondsPlayedXOffset + 26, 62 );
+                break;
+        }
+
+
+
+
+
 
         switch (currentGameState) {
             case LOST:

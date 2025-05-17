@@ -53,7 +53,7 @@ public class GameBoard extends JPanel {
         if (HomeScreen.getChosenDifficulty() == Difficulty.EASY) {
             setBackground(new Color(86, 64, 26));
         } else {
-            setBackground(new Color(42, 41, 47));
+            setBackground(new Color(62, 82, 51));
         }
         for (int row = 0; row <= fieldMaxIndex; row++) {
             for (int col = 0; col <= fieldMaxIndex; col++) {
