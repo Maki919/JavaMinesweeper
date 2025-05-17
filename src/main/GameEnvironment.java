@@ -1,6 +1,7 @@
 package main;
 
 
+import nonGame.HomeScreen;
 import nonGame.Stats;
 
 import javax.imageio.ImageIO;
@@ -29,7 +30,8 @@ public class GameEnvironment {
     private int prevSecondsPlayedDigitLength = 1;
     private int secondsPlayedXOffset = 90;
 
-    private BufferedImage gameEnvironment;
+    private BufferedImage gameEnvironmentEasy;
+    private BufferedImage gameEnvironmentMedium;
     private BufferedImage wonMessage;
     private BufferedImage lostMessage;
 
@@ -49,7 +51,8 @@ public class GameEnvironment {
         time.start();
 
         try{
-            gameEnvironment = ImageIO.read(new File("image/boardEnvironment.png"));
+            gameEnvironmentEasy = ImageIO.read(new File("image/boardEnvironmentPlant.png"));
+            gameEnvironmentMedium = ImageIO.read(new File("image/boardEnvironmentWater.png"));
             wonMessage = ImageIO.read(new File("image/wonMessage.png"));
             lostMessage = ImageIO.read(new File("image/lostMessage.png"));
         } catch (IOException e) {
@@ -59,9 +62,15 @@ public class GameEnvironment {
     }
 
     public void paint(Graphics g, GameBoard gameBoard) {
+        switch (HomeScreen.getChosenDifficulty()) {
+            case Difficulty.EASY:
+                g.drawImage(gameEnvironmentEasy, 0,0, MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT, null);
+                break;
+            case Difficulty.MEDIUM:
+                g.drawImage(gameEnvironmentMedium, 0,0, MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT, null);
+                break;
+        }
 
-
-        g.drawImage(gameEnvironment, 0,0, MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT, null);
 
         g.setColor(new Color(147, 123, 46));
         g.setFont(new Font("Adelle Sans Devanagari", Font.BOLD, 20));

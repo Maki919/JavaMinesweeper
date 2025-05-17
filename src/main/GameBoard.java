@@ -1,5 +1,6 @@
 package main;
 
+import nonGame.HomeScreen;
 import nonGame.Stats;
 
 import javax.imageio.ImageIO;
@@ -18,26 +19,29 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static main.Field.*;
+import static nonGame.HomeScreen.getChosenDifficulty;
 
 public class GameBoard extends JPanel {
 
     private static final Logger LOGGER = Logger.getLogger(GameBoard.class.getName());
 
     public static final int fieldWH = 50;
-    public static final int boardOffsetX = 40;
-    public static final int boardOffsetY = 100;
 
-    private final int bombMaxAmount = 10;
-    private final int fieldMaxIndex = 8;
+    private final int bombMaxAmount = getChosenDifficulty().getBombsMaxAmount();
+    private final int fieldMaxIndex = getChosenDifficulty().getFieldMaxIndex();
+    public final int boardOffsetX = (getChosenDifficulty().getFrameWidth() - ((fieldMaxIndex + 1) * fieldWH)) / 2; //
+    public final int boardOffsetY = 100;
     private int flagsPlaced = 0;
     private int bombsFlagged = 0;
+
+
 
     private final GameEnvironment gameEnvironment = new GameEnvironment(this);
     private Timer gameLostTimer;
 
     //Richtungen der angrenzenden Spielfelder
     private final int[][] directions = new int[][]{{-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}};
-    private final Field[][] fields = new Field[9][9];
+    private final Field[][] fields = new Field[fieldMaxIndex+1][fieldMaxIndex+1];
     private final Random rand = new Random();
 
 
@@ -46,7 +50,11 @@ public class GameBoard extends JPanel {
 
     public GameBoard() {
         new GameEnvironment(this);
-        setBackground(new Color(86, 64, 26));
+        if (HomeScreen.getChosenDifficulty() == Difficulty.EASY) {
+            setBackground(new Color(86, 64, 26));
+        } else {
+            setBackground(new Color(42, 41, 47));
+        }
         for (int row = 0; row <= fieldMaxIndex; row++) {
             for (int col = 0; col <= fieldMaxIndex; col++) {
                 fields[row][col] = new Field(0, STATUS_HIDDEN);
