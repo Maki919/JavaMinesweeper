@@ -112,13 +112,13 @@ public class GameEnvironment {
     public void setGameStateLost(GameBoard gameBoard) {
         currentGameState = gameState.LOST;
         resultMessageAnimation(gameBoard);
-        Stats.handleGameOver(secondsPlayed, gameBoard.getBombsFlagged());
+        Stats.handleGameOverStats(secondsPlayed, gameBoard.getBombsFlagged());
         Stats.incrementGamesLost();
     }
     public void setGameStateWon(GameBoard gameBoard) {
         currentGameState = gameState.WON;
         resultMessageAnimation(gameBoard);
-        Stats.handleGameOver(secondsPlayed, gameBoard.getBombsFlagged());
+        Stats.handleGameOverStats(secondsPlayed, gameBoard.getBombsFlagged());
     }
 
 }

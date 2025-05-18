@@ -14,7 +14,7 @@ public class Stats extends JPanel {
 
     public static void incrementGamesLost(){ statGamesLost++; }
 
-    public static void handleGameOver(int seconds, int bombsFlagged){
+    public static void handleGameOverStats(int seconds, int bombsFlagged){
         statSecondsPlayed += seconds;
         statBombsFlagged += bombsFlagged;
         statGamesPlayed++;

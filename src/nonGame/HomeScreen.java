@@ -1,48 +1,70 @@
 package nonGame;
 
 import main.Difficulty;
-import main.Main;
 import main.MainApp;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class HomeScreen extends JPanel {
 
     private static Difficulty chosenDifficulty;
+    private BufferedImage homeScreenBackground;
 
     public HomeScreen(MainApp mainApp, JFrame frame) {
+        try {
+            homeScreenBackground = ImageIO.read(new File("image/homeScreenBackground.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         setLayout(null);
         JButton easyGamemode = new JButton("Easy");
-        easyGamemode.setBounds(20,50,50, 20);
-        easyGamemode.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                chosenDifficulty = Difficulty.EASY;
-                changeFrameSize(frame);
-                mainApp.startGame();
-            }
-        });
-        add(easyGamemode);
+        easyGamemode.setBounds(MainApp.FRAME_WIDTH/2 - 100 , MainApp.FRAME_HEIGHT/2 -62, 200, 52);
+        handleButton(easyGamemode, frame, mainApp, Difficulty.EASY);
 
         JButton mediumGamemode = new JButton("Medium");
-        mediumGamemode.setBounds(20,20,50, 20);
-        mediumGamemode.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                chosenDifficulty = Difficulty.MEDIUM;
-                changeFrameSize(frame);
-                mainApp.startGame();
-            }
-        });
-        add(mediumGamemode);
+        mediumGamemode.setBounds(MainApp.FRAME_WIDTH/2 -100 , MainApp.FRAME_HEIGHT/2 + 12 , 200, 52);
+        handleButton(mediumGamemode, frame, mainApp, Difficulty.MEDIUM);
+
     }
-    public static Difficulty getChosenDifficulty() { return chosenDifficulty; }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(homeScreenBackground, 0, 0, MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT, null);
+    }
+
+    public static Difficulty getChosenDifficulty() {
+        return chosenDifficulty;
+    }
+
     private void changeFrameSize(JFrame frame) {
         MainApp.FRAME_WIDTH = chosenDifficulty.getFrameWidth();
         MainApp.FRAME_HEIGHT = chosenDifficulty.getFrameHeight();
         frame.setSize(MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT);
         frame.setLocationRelativeTo(null);
+    }
+    private void handleButton(JButton button, JFrame frame, MainApp mainApp, Difficulty difficulty) {
+        button.setFont(new Font("Adelle Sans Devanagari", Font.BOLD, 20));
+        button.setForeground(new Color(141, 98, 23));
+        button.setOpaque(false);
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                chosenDifficulty = difficulty;
+                mainApp.startGame();
+                changeFrameSize(frame);
+            }
+        });
+        add(button);
     }
 }

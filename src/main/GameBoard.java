@@ -1,7 +1,6 @@
 package main;
 
 import nonGame.HomeScreen;
-import nonGame.Stats;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -34,10 +33,7 @@ public class GameBoard extends JPanel {
     private int flagsPlaced = 0;
     private int bombsFlagged = 0;
 
-
-
     private final GameEnvironment gameEnvironment = new GameEnvironment(this);
-    private Timer gameLostTimer;
 
     //Richtungen der angrenzenden Spielfelder
     private final int[][] directions = new int[][]{{-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}};

@@ -8,11 +8,11 @@ import java.awt.*;
 
 
 public class MainApp {
-    public static int FRAME_WIDTH = HomeScreen.getChosenDifficulty() == null ? 200 : (HomeScreen.getChosenDifficulty().getFrameWidth());
-    public static int FRAME_HEIGHT = HomeScreen.getChosenDifficulty() == null ? 200 : (HomeScreen.getChosenDifficulty().getFrameHeight());
-    private JFrame frame;
-    private JPanel mainPanel;
-    private CardLayout cardLayout;
+    public static int FRAME_WIDTH = HomeScreen.getChosenDifficulty() == null ? 600 : (HomeScreen.getChosenDifficulty().getFrameWidth());
+    public static int FRAME_HEIGHT = HomeScreen.getChosenDifficulty() == null ? 600 : (HomeScreen.getChosenDifficulty().getFrameHeight());
+    private final JFrame frame;
+    private final JPanel mainPanel;
+    private final CardLayout cardLayout;
 
     public MainApp() {
 
