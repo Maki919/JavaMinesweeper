@@ -20,7 +20,7 @@ public class HomeScreen extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 chosenDifficulty = Difficulty.EASY;
-                changeFrameSize();
+                changeFrameSize(frame);
                 mainApp.startGame();
             }
         });
@@ -32,15 +32,17 @@ public class HomeScreen extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 chosenDifficulty = Difficulty.MEDIUM;
-                changeFrameSize();
+                changeFrameSize(frame);
                 mainApp.startGame();
             }
         });
         add(mediumGamemode);
     }
     public static Difficulty getChosenDifficulty() { return chosenDifficulty; }
-    private void changeFrameSize(){
+    private void changeFrameSize(JFrame frame) {
         MainApp.FRAME_WIDTH = chosenDifficulty.getFrameWidth();
         MainApp.FRAME_HEIGHT = chosenDifficulty.getFrameHeight();
+        frame.setSize(MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT);
+        frame.setLocationRelativeTo(null);
     }
 }
