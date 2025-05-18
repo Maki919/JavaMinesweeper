@@ -26,12 +26,14 @@ public class HomeScreen extends JPanel {
         setLayout(null);
         JButton easyGamemode = new JButton("Easy");
         easyGamemode.setBounds(MainApp.FRAME_WIDTH/2 - 100 , MainApp.FRAME_HEIGHT/2 -62, 200, 52);
-        handleButton(easyGamemode, frame, mainApp, Difficulty.EASY);
+
+        handleButtonGameAction(easyGamemode, frame, mainApp, Difficulty.EASY);
+        handleButtonStyle(easyGamemode);
 
         JButton mediumGamemode = new JButton("Medium");
         mediumGamemode.setBounds(MainApp.FRAME_WIDTH/2 -100 , MainApp.FRAME_HEIGHT/2 + 12 , 200, 52);
-        handleButton(mediumGamemode, frame, mainApp, Difficulty.MEDIUM);
-
+        handleButtonGameAction(mediumGamemode, frame, mainApp, Difficulty.MEDIUM);
+        handleButtonStyle(mediumGamemode);
     }
 
     @Override
@@ -50,13 +52,16 @@ public class HomeScreen extends JPanel {
         frame.setSize(MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT);
         frame.setLocationRelativeTo(null);
     }
-    private void handleButton(JButton button, JFrame frame, MainApp mainApp, Difficulty difficulty) {
+    private void handleButtonStyle(JButton button) {
         button.setFont(new Font("Adelle Sans Devanagari", Font.BOLD, 20));
         button.setForeground(new Color(141, 98, 23));
         button.setOpaque(false);
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);
         button.setFocusPainted(false);
+        add(button);
+    }
+    private void handleButtonGameAction(JButton button, JFrame frame, MainApp mainApp, Difficulty difficulty) {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -65,6 +70,5 @@ public class HomeScreen extends JPanel {
                 changeFrameSize(frame);
             }
         });
-        add(button);
     }
 }

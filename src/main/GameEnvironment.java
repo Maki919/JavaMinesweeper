@@ -2,7 +2,7 @@ package main;
 
 
 import nonGame.HomeScreen;
-import nonGame.Stats;
+import stats.Stats;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -83,11 +83,6 @@ public class GameEnvironment {
                 break;
         }
 
-
-
-
-
-
         switch (currentGameState) {
             case LOST:
                 g.drawImage(lostMessage, resultMessageX, 30, 150, 112, null);
@@ -112,15 +107,16 @@ public class GameEnvironment {
     public void setGameStateLost(GameBoard gameBoard) {
         currentGameState = gameState.LOST;
         resultMessageAnimation(gameBoard);
-        Stats.handleGameOverStats(secondsPlayed, gameBoard.getBombsFlagged());
-        Stats.incrementGamesLost();
+        Stats stats = new Stats();
+        stats.handleGameOverStats(secondsPlayed, gameBoard.getBombsFlagged());
+        stats.incrementGamesLost();
     }
     public void setGameStateWon(GameBoard gameBoard) {
         currentGameState = gameState.WON;
         resultMessageAnimation(gameBoard);
-        Stats.handleGameOverStats(secondsPlayed, gameBoard.getBombsFlagged());
+        Stats stats = new Stats();
+        stats.handleGameOverStats(secondsPlayed, gameBoard.getBombsFlagged());
     }
-
 }
 
 

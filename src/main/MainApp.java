@@ -1,7 +1,7 @@
 package main;
 
 import nonGame.HomeScreen;
-import nonGame.Stats;
+import stats.StatScreen;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,20 +26,21 @@ public class MainApp {
         mainPanel = new JPanel(cardLayout);
 
         HomeScreen homeScreen = new HomeScreen(this, frame);
-        Stats stats = new Stats();
+        StatScreen statScreen = new StatScreen();
 
         mainPanel.add(homeScreen, "homeScreen");
-        mainPanel.add(stats, "stats");
+        mainPanel.add(statScreen, "statScreen");
 
         frame.add(mainPanel);
 
-        showPanel("homeScreen");
+        showPanel("statScreen");
 
         frame.setVisible(true);
     }
     public void showPanel(String panelName) {
         cardLayout.show(mainPanel, panelName);
     }
+
     public void startGame() {
         GameBoard gameBoard = new GameBoard();
         mainPanel.add(gameBoard, "gameBoard");
