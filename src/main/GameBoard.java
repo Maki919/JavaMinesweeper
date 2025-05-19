@@ -24,18 +24,20 @@ public class GameBoard extends JPanel {
 
     private static final Logger LOGGER = Logger.getLogger(GameBoard.class.getName());
 
-    public static final int fieldWH = 50;
+    public static final int fieldWH = 50;   //Field width and height
 
-    private final int bombMaxAmount = getChosenDifficulty().getBombsMaxAmount();
+    private final int bombMaxAmount = getChosenDifficulty().getBombsMaxAmount(); //amount of spawned bombs
     private final int fieldMaxIndex = getChosenDifficulty().getFieldMaxIndex();
-    public final int boardOffsetX = (getChosenDifficulty().getFrameWidth() - ((fieldMaxIndex + 1) * fieldWH)) / 2; //
+
+    public final int boardOffsetX = (getChosenDifficulty().getFrameWidth() - ((fieldMaxIndex + 1) * fieldWH)) / 2;
     public final int boardOffsetY = 100;
+
     private int flagsPlaced = 0;
     private int bombsFlagged = 0;
 
     private final GameEnvironment gameEnvironment = new GameEnvironment(this);
 
-    //Richtungen der angrenzenden Spielfelder
+    //Directions of surrounding fields
     private final int[][] directions = new int[][]{{-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}};
     private final Field[][] fields = new Field[fieldMaxIndex+1][fieldMaxIndex+1];
     private final Random rand = new Random();
@@ -46,17 +48,21 @@ public class GameBoard extends JPanel {
 
     public GameBoard() {
         new GameEnvironment(this);
-        if (HomeScreen.getChosenDifficulty() == Difficulty.EASY) {
-            setBackground(new Color(86, 64, 26));
-        } else {
-            setBackground(new Color(62, 82, 51));
+
+        switch(HomeScreen.getChosenDifficulty()){ //background Colour
+            case EASY:
+                setBackground(new Color(86, 64, 26));
+                break;
+            case MEDIUM:
+                setBackground(new Color(62, 82, 51));
+                break;
         }
         for (int row = 0; row <= fieldMaxIndex; row++) {
             for (int col = 0; col <= fieldMaxIndex; col++) {
-                fields[row][col] = new Field(0, STATUS_HIDDEN);
+                fields[row][col] = new Field(0, STATUS_HIDDEN); // Generate each field in neutral form
             }
         }
-        try{
+        try{ //Map textures onto numbers
             //Flag
             numberImages.put(-3, ImageIO.read(new File("image/set1/-3.png")));
             //Button
@@ -80,8 +86,15 @@ public class GameBoard extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
+                if (e.getX() < boardOffsetX || e.getY() < boardOffsetY) {
+                    return; // Klick ober- oder linkshalb des Boards ignorieren
+                }
                 int row = (e.getY() - boardOffsetY) / fieldWH;
                 int col = (e.getX() - boardOffsetX) / fieldWH;
+
+                if (col > fieldMaxIndex || row > fieldMaxIndex) {
+                    return; // Klick außerhalb der Spielfeldgröße ignorieren
+                }
 
                 if(SwingUtilities.isLeftMouseButton(e)) {
                     if(fields[row][col].getStatus() == STATUS_FLAGGED)
@@ -132,6 +145,7 @@ public class GameBoard extends JPanel {
 
     private void generateFieldTypes(){
         int bombCounter = 0;
+        //generate bombs
         while (bombCounter < bombMaxAmount) {
             int randRow = rand.nextInt(fieldMaxIndex+1);
             int randCol = rand.nextInt(fieldMaxIndex+1);
@@ -140,6 +154,7 @@ public class GameBoard extends JPanel {
                 bombCounter++;
             }
         }
+        //generate numbers
         for (int row = 0; row <= fieldMaxIndex; row++) {
             for (int col = 0; col <= fieldMaxIndex; col++) {
                 if (fields[row][col].getType() == TYPE_BOMB) {
@@ -182,7 +197,8 @@ public class GameBoard extends JPanel {
     }
 
     private void paintFieldTexture(int row, int col, int type, Graphics g) {
-        g.drawImage(numberImages.get(type), boardOffsetX + col * fieldWH, boardOffsetY + row * fieldWH, fieldWH, fieldWH, null);
+        if (numberImages.get(type) != null)
+            g.drawImage(numberImages.get(type), boardOffsetX + col * fieldWH, boardOffsetY + row * fieldWH, fieldWH, fieldWH, null);
     }
 
     private void revealWholeBoard(){
@@ -194,7 +210,7 @@ public class GameBoard extends JPanel {
         repaint();
     }
 
-    private void revealType0(int row, int col) {
+    private void revealType0(int row, int col) { //handles left click onto Type0-Fields
         if (fields[row][col].getStatus() == STATUS_REVEALED) return;
 
         fields[row][col].setStatus(STATUS_REVEALED);

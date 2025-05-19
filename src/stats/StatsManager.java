@@ -17,6 +17,7 @@ public class StatsManager {
         try (Reader reader = new FileReader(FILE_PATH)) {
             return gson.fromJson(reader, StatsData.class);
         } catch (IOException e) {
+            System.err.println("Konnte Statistikdaten nicht laden, neue Datei wird erstellt.");
             return new StatsData();
         }
     }

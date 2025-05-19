@@ -9,10 +9,11 @@ public class Stats {
         this.data = StatsManager.loadStats();
     }
 
-    public void handleGameOverStats(int seconds, int bombsFlagged) {
+    public void handleGameOverStats(int seconds, int bombsFlagged){
         data.secondsPlayed += seconds;
         data.bombsFlagged += bombsFlagged;
         data.gamesPlayed++;
+        data.gamesLost = data.gamesPlayed - data.gamesWon;
         switch (HomeScreen.getChosenDifficulty()){
             case EASY:
                 data.easyGamesPlayed++;
@@ -21,17 +22,21 @@ public class Stats {
                 data.mediumGamesPlayed++;
                 break;
         }
-        data.gamesWon = data.gamesPlayed - data.gamesLost;
         StatsManager.saveStats(data);
     }
-
-    public void incrementGamesLost() {
-        data.gamesLost++;
+    public void handleGameWonStats(int seconds) {
+        data.gamesWon++;
+        switch (HomeScreen.getChosenDifficulty()){
+            case EASY:
+                if (data.fastestEasyGamesPlayed == 0 || data.fastestEasyGamesPlayed >= seconds)
+                    data.fastestEasyGamesPlayed = seconds;
+                break;
+            case MEDIUM:
+                if (data.fastestMediumGamesPlayed == 0 || data.fastestMediumGamesPlayed >= seconds)
+                    data.fastestMediumGamesPlayed = seconds;
+                break;
+        }
         StatsManager.saveStats(data);
-    }
-
-    public StatsData getStats() {
-        return data;
     }
 }
 

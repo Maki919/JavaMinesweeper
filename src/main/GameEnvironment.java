@@ -7,11 +7,15 @@ import stats.Stats;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.sun.java.accessibility.util.AWTEventMonitor.addMouseListener;
 
 
 public class GameEnvironment {
@@ -24,18 +28,27 @@ public class GameEnvironment {
         WON
     }
     private gameState currentGameState = gameState.ONGOING;
+    //result message tools
     Timer gameLostTimer;
     private int resultMessageX = -180;
+
+    //time played tools
     private int secondsPlayed = 0;
     private int prevSecondsPlayedDigitLength = 1;
     private int secondsPlayedXOffset = 90;
 
+    //images
     private BufferedImage gameEnvironmentEasy;
     private BufferedImage gameEnvironmentMedium;
     private BufferedImage wonMessage;
     private BufferedImage lostMessage;
 
+    //button dimensions
+    private final Rectangle homeButtonEasy = new Rectangle(MainApp.FRAME_WIDTH/2-50, 0, 100, 80);
+    private final Rectangle homeButtonMedium = new Rectangle(MainApp.FRAME_WIDTH/2-48, 0, 80, 70);
+
     public GameEnvironment(JPanel panel) {
+        //ingame timer
         Timer time = new Timer(1000, e1 -> {
             if (currentGameState == gameState.ONGOING) {
                 secondsPlayed++;
@@ -59,6 +72,27 @@ public class GameEnvironment {
             LOGGER.log(Level.SEVERE, "Fehler beim Laden von Bildern", e);
         }
 
+        //mouseListener for homebutton
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e)) {
+
+                    switch (HomeScreen.getChosenDifficulty()) {
+                        case EASY:
+                            if(homeButtonEasy.contains(e.getPoint())){
+                                //return to homeScreen
+                            }
+                            break;
+                        case MEDIUM:
+                            if(homeButtonMedium.contains(e.getPoint())){
+                                //return to homeScreen
+                            }
+                            break;
+                    }
+                }
+            }
+        });
     }
 
     public void paint(Graphics g, GameBoard gameBoard) {
@@ -72,17 +106,19 @@ public class GameEnvironment {
 
         switch (HomeScreen.getChosenDifficulty()) {
             case Difficulty.EASY:
-                g.drawImage(gameEnvironmentEasy, 0,0, MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT, null);
+                if(gameEnvironmentEasy != null)
+                    g.drawImage(gameEnvironmentEasy, 0,0, MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT, null);
                 g.drawString(""+ remainingFlagsScore, MainApp.FRAME_WIDTH/2 - remainingFlagsScoreXOffset, 41 );
                 g.drawString(""+ secondsPlayed, MainApp.FRAME_WIDTH/2 + secondsPlayedXOffset, 41 );
                 break;
             case Difficulty.MEDIUM:
-                g.drawImage(gameEnvironmentMedium, 0,0, MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT, null);
+                if(gameEnvironmentMedium != null)
+                    g.drawImage(gameEnvironmentMedium, 0,0, MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT, null);
                 g.drawString(""+ remainingFlagsScore, MainApp.FRAME_WIDTH/2 - remainingFlagsScoreXOffset - 43, 62 );
                 g.drawString(""+ secondsPlayed, MainApp.FRAME_WIDTH/2 + secondsPlayedXOffset + 26, 62 );
                 break;
         }
-
+        //result message picture
         switch (currentGameState) {
             case LOST:
                 g.drawImage(lostMessage, resultMessageX, 30, 150, 112, null);
@@ -95,7 +131,7 @@ public class GameEnvironment {
     public void resultMessageAnimation(JPanel panel) {
         gameLostTimer = new Timer(10, e1 -> {
             if (resultMessageX < 0) {
-                resultMessageX += 1;
+                resultMessageX += 1; //slide in from left to right
                 panel.repaint();
             } else {
                 gameLostTimer.stop();
@@ -109,12 +145,12 @@ public class GameEnvironment {
         resultMessageAnimation(gameBoard);
         Stats stats = new Stats();
         stats.handleGameOverStats(secondsPlayed, gameBoard.getBombsFlagged());
-        stats.incrementGamesLost();
     }
     public void setGameStateWon(GameBoard gameBoard) {
         currentGameState = gameState.WON;
         resultMessageAnimation(gameBoard);
         Stats stats = new Stats();
+        stats.handleGameWonStats(secondsPlayed);
         stats.handleGameOverStats(secondsPlayed, gameBoard.getBombsFlagged());
     }
 }

@@ -6,8 +6,6 @@ import main.MainApp;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +24,6 @@ public class HomeScreen extends JPanel {
         setLayout(null);
         JButton easyGamemode = new JButton("Easy");
         easyGamemode.setBounds(MainApp.FRAME_WIDTH/2 - 100 , MainApp.FRAME_HEIGHT/2 -62, 200, 52);
-
         handleButtonGameAction(easyGamemode, frame, mainApp, Difficulty.EASY);
         handleButtonStyle(easyGamemode);
 
@@ -34,12 +31,18 @@ public class HomeScreen extends JPanel {
         mediumGamemode.setBounds(MainApp.FRAME_WIDTH/2 -100 , MainApp.FRAME_HEIGHT/2 + 12 , 200, 52);
         handleButtonGameAction(mediumGamemode, frame, mainApp, Difficulty.MEDIUM);
         handleButtonStyle(mediumGamemode);
+
+        JButton statButton = new JButton("Stats");
+        statButton.setBounds(MainApp.FRAME_WIDTH/2 -100 , MainApp.FRAME_HEIGHT/2 + 86 , 200, 52);
+        statButton.addActionListener(e -> mainApp.showPanel("statScreen"));
+        handleButtonStyle(statButton);
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(homeScreenBackground, 0, 0, MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT, null);
+        if (homeScreenBackground != null)
+            g.drawImage(homeScreenBackground, 0, 0, MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT, null);
     }
 
     public static Difficulty getChosenDifficulty() {
@@ -62,13 +65,10 @@ public class HomeScreen extends JPanel {
         add(button);
     }
     private void handleButtonGameAction(JButton button, JFrame frame, MainApp mainApp, Difficulty difficulty) {
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                chosenDifficulty = difficulty;
-                mainApp.startGame();
-                changeFrameSize(frame);
-            }
+        button.addActionListener(e -> {
+            chosenDifficulty = difficulty;
+            mainApp.startGame();
+            changeFrameSize(frame);
         });
     }
 }

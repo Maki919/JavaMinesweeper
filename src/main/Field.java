@@ -7,11 +7,8 @@ public class Field {
     public static final int STATUS_REVEALED = 1;
     public static final int STATUS_FLAGGED = 2;
 
-
-    private int type = 0;
-    private int status = 0; // 0: unclicked, 1: clicked, 2: flagged
-    private int x;
-    private int y;
+    private int type;
+    private int status; // 0: unclicked, 1: clicked, 2: flagged
 
     public Field(int type, int status) {
         this.type = type;

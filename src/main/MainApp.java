@@ -26,14 +26,14 @@ public class MainApp {
         mainPanel = new JPanel(cardLayout);
 
         HomeScreen homeScreen = new HomeScreen(this, frame);
-        StatScreen statScreen = new StatScreen();
+        StatScreen statScreen = new StatScreen(this);
 
         mainPanel.add(homeScreen, "homeScreen");
         mainPanel.add(statScreen, "statScreen");
 
         frame.add(mainPanel);
 
-        showPanel("statScreen");
+        showPanel("homeScreen");
 
         frame.setVisible(true);
     }
