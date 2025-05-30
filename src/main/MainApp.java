@@ -8,11 +8,12 @@ import java.awt.*;
 
 
 public class MainApp {
-    public static int FRAME_WIDTH = HomeScreen.getChosenDifficulty() == null ? 600 : (HomeScreen.getChosenDifficulty().getFrameWidth());
-    public static int FRAME_HEIGHT = HomeScreen.getChosenDifficulty() == null ? 600 : (HomeScreen.getChosenDifficulty().getFrameHeight());
+    public int FRAME_WIDTH = HomeScreen.getChosenDifficulty() == null ? 600 : (HomeScreen.getChosenDifficulty().getFrameWidth());
+    public int FRAME_HEIGHT = HomeScreen.getChosenDifficulty() == null ? 600 : (HomeScreen.getChosenDifficulty().getFrameHeight());
     private final JFrame frame;
     private final JPanel mainPanel;
     private final CardLayout cardLayout;
+    private GameBoard gameBoard;
 
     public MainApp() {
 
@@ -42,9 +43,18 @@ public class MainApp {
     }
 
     public void startGame() {
-        GameBoard gameBoard = new GameBoard();
+        gameBoard = new GameBoard(this);
         mainPanel.add(gameBoard, "gameBoard");
         showPanel("gameBoard");
+    }
+    public void backToHomeScreen() {
+        HomeScreen.setChosenDifficulty(null);
+        FRAME_WIDTH = 600;
+        FRAME_HEIGHT = 600;
+        frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+        frame.setLocationRelativeTo(null);
+
+        showPanel("homeScreen");
     }
 
 }

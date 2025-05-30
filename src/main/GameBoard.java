@@ -35,7 +35,7 @@ public class GameBoard extends JPanel {
     private int flagsPlaced = 0;
     private int bombsFlagged = 0;
 
-    private final GameEnvironment gameEnvironment = new GameEnvironment(this);
+    private final GameEnvironment gameEnvironment;
 
     //Directions of surrounding fields
     private final int[][] directions = new int[][]{{-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}};
@@ -46,8 +46,8 @@ public class GameBoard extends JPanel {
     //Map number to image
     private final Map<Integer, BufferedImage> numberImages = new HashMap<>();
 
-    public GameBoard() {
-        new GameEnvironment(this);
+    public GameBoard(MainApp mainApp) {
+        gameEnvironment = new GameEnvironment(this, mainApp);
 
         switch(HomeScreen.getChosenDifficulty()){ //background Colour
             case EASY:
@@ -176,8 +176,8 @@ public class GameBoard extends JPanel {
     }
 
     @Override
-    public void paint(Graphics g) {
-        super.paint(g);
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         for (int row = 0; row <= fieldMaxIndex; row++) {
             for (int col = 0; col <= fieldMaxIndex; col++) {
 

@@ -7,15 +7,13 @@ import stats.Stats;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.sun.java.accessibility.util.AWTEventMonitor.addMouseListener;
+import static nonGame.HomeScreen.getChosenDifficulty;
 
 
 public class GameEnvironment {
@@ -43,11 +41,10 @@ public class GameEnvironment {
     private BufferedImage wonMessage;
     private BufferedImage lostMessage;
 
-    //button dimensions
-    private final Rectangle homeButtonEasy = new Rectangle(MainApp.FRAME_WIDTH/2-50, 0, 100, 80);
-    private final Rectangle homeButtonMedium = new Rectangle(MainApp.FRAME_WIDTH/2-48, 0, 80, 70);
+    private final MainApp mainApp;
 
-    public GameEnvironment(JPanel panel) {
+    public GameEnvironment(JPanel panel, MainApp mainApp) {
+        this.mainApp = mainApp;
         //ingame timer
         Timer time = new Timer(1000, e1 -> {
             if (currentGameState == gameState.ONGOING) {
@@ -72,27 +69,22 @@ public class GameEnvironment {
             LOGGER.log(Level.SEVERE, "Fehler beim Laden von Bildern", e);
         }
 
-        //mouseListener for homebutton
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (SwingUtilities.isLeftMouseButton(e)) {
-
-                    switch (HomeScreen.getChosenDifficulty()) {
-                        case EASY:
-                            if(homeButtonEasy.contains(e.getPoint())){
-                                //return to homeScreen
-                            }
-                            break;
-                        case MEDIUM:
-                            if(homeButtonMedium.contains(e.getPoint())){
-                                //return to homeScreen
-                            }
-                            break;
-                    }
-                }
-            }
+        //backToHomeButton
+        JButton homeButton = new JButton();
+        panel.setLayout(null);
+        switch(getChosenDifficulty()) {
+            case EASY:
+                homeButton.setBounds(getChosenDifficulty().getFrameWidth()/2-48, 0, 100, 80);
+                break;
+                case MEDIUM:
+                    homeButton.setBounds(getChosenDifficulty().getFrameWidth()/2-48, 0, 80, 70);
+                    break;
+        }
+        homeButton.addActionListener(e -> {
+            mainApp.backToHomeScreen();
         });
+        HomeScreen.makeButtonInvisible(homeButton);
+        panel.add(homeButton);
     }
 
     public void paint(Graphics g, GameBoard gameBoard) {
@@ -104,18 +96,18 @@ public class GameEnvironment {
         g.setColor(new Color(147, 123, 46));
         g.setFont(new Font("Adelle Sans Devanagari", Font.BOLD, 20));
 
-        switch (HomeScreen.getChosenDifficulty()) {
+        switch (getChosenDifficulty()) {
             case Difficulty.EASY:
                 if(gameEnvironmentEasy != null)
-                    g.drawImage(gameEnvironmentEasy, 0,0, MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT, null);
-                g.drawString(""+ remainingFlagsScore, MainApp.FRAME_WIDTH/2 - remainingFlagsScoreXOffset, 41 );
-                g.drawString(""+ secondsPlayed, MainApp.FRAME_WIDTH/2 + secondsPlayedXOffset, 41 );
+                    g.drawImage(gameEnvironmentEasy, 0,0, mainApp.FRAME_WIDTH, mainApp.FRAME_HEIGHT, null);
+                g.drawString(""+ remainingFlagsScore, mainApp.FRAME_WIDTH/2 - remainingFlagsScoreXOffset, 41 );
+                g.drawString(""+ secondsPlayed, mainApp.FRAME_WIDTH/2 + secondsPlayedXOffset, 41 );
                 break;
             case Difficulty.MEDIUM:
                 if(gameEnvironmentMedium != null)
-                    g.drawImage(gameEnvironmentMedium, 0,0, MainApp.FRAME_WIDTH, MainApp.FRAME_HEIGHT, null);
-                g.drawString(""+ remainingFlagsScore, MainApp.FRAME_WIDTH/2 - remainingFlagsScoreXOffset - 43, 62 );
-                g.drawString(""+ secondsPlayed, MainApp.FRAME_WIDTH/2 + secondsPlayedXOffset + 26, 62 );
+                    g.drawImage(gameEnvironmentMedium, 0,0, mainApp.FRAME_WIDTH, mainApp.FRAME_HEIGHT, null);
+                g.drawString(""+ remainingFlagsScore, mainApp.FRAME_WIDTH/2 - remainingFlagsScoreXOffset - 43, 62 );
+                g.drawString(""+ secondsPlayed, mainApp.FRAME_WIDTH/2 + secondsPlayedXOffset + 26, 62 );
                 break;
         }
         //result message picture

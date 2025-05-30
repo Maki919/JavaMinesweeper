@@ -1,6 +1,7 @@
 package stats;
 
 import main.MainApp;
+import nonGame.HomeScreen;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -12,8 +13,10 @@ public class StatScreen extends JPanel {
     private final StatsData statsData;
 
     private BufferedImage statBackgroundImage;
+    private MainApp mainApp;
 
     public StatScreen(MainApp mainApp) {
+        this.mainApp = mainApp;
         setLayout(null);
         statsData = StatsManager.loadStats();
         try{
@@ -21,8 +24,9 @@ public class StatScreen extends JPanel {
         } catch(Exception e){
             e.printStackTrace();
         }
-        JButton backButton = new JButton("Home");
-        backButton.setBounds(10, 10, 100, 30);
+        JButton backButton = new JButton();
+        backButton.setBounds(148, 55, 300, 103);
+        HomeScreen.makeButtonInvisible(backButton);
         backButton.addActionListener(e -> mainApp.showPanel("homeScreen"));
         add(backButton);
 
@@ -34,9 +38,9 @@ public class StatScreen extends JPanel {
         if (statBackgroundImage != null)
             g.drawImage(statBackgroundImage, 0, 0, getWidth(), getHeight(), null);
 
-        int statTextX = MainApp.FRAME_WIDTH/2 - 150;
-        int statDataX = MainApp.FRAME_HEIGHT/2 + 70;
-        int statY = MainApp.FRAME_HEIGHT/2 - 97;
+        int statTextX = mainApp.FRAME_WIDTH/2 - 150;
+        int statDataX = mainApp.FRAME_HEIGHT/2 + 70;
+        int statY = mainApp.FRAME_HEIGHT/2 - 97;
         g.setColor(new Color(0x195F4E));
         g.setFont(new Font("Dialog", Font.BOLD, 15));
 

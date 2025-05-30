@@ -1,12 +1,11 @@
 {
-  "secondsPlayed": 1286,
-  "bombsFlagged": 152,
-  "fieldsRevealed": 0,
-  "gamesPlayed": 28,
-  "gamesLost": 23,
-  "gamesWon": 5,
-  "easyGamesPlayed": 15,
-  "mediumGamesPlayed": 13,
-  "fastestEasyGamesPlayed": 61,
-  "fastestMediumGamesPlayed": 357
+  "secondsPlayed": 3027,
+  "bombsFlagged": 422,
+  "gamesPlayed": 88,
+  "gamesLost": 74,
+  "gamesWon": 14,
+  "easyGamesPlayed": 40,
+  "mediumGamesPlayed": 48,
+  "fastestEasyGamesPlayed": 31,
+  "fastestMediumGamesPlayed": 263
 }
