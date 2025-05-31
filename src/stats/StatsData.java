@@ -14,8 +14,8 @@ public class StatsData {
 
     public static String secondsToHours(int second) {
         int secondsMod = second % 60;
-        int minutes = second / 60;
-        int hours = minutes / 60;
+        int minutes = (second % 3600) / 60;
+        int hours = second / 3600;
 
         return prevZeros(hours) + ":" + prevZeros(minutes) + ":" + prevZeros(secondsMod);
     }
